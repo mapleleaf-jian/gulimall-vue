@@ -82,15 +82,13 @@ export default {
         method: 'post',
         data: this.$http.adornData(this.category, false)
       }).then(({data}) => {
-        if (data.code === 0) {
-          this.$message({
-            type: 'success',
-            message: '添加成功!'
-          })
-          this.dialogVisible = false
-          this.getMenus()
-          this.expandNodes = [this.category.parentCid]
-        }
+        this.$message({
+          type: 'success',
+          message: '添加成功!'
+        })
+        this.dialogVisible = false
+        this.getMenus()
+        this.expandNodes = [this.category.parentCid]
       })
     },
     remove(node, data) {
