@@ -7,6 +7,8 @@
       node-key="catId"
       :expand-on-click-node="false"
       :default-expanded-keys="expandNodes"
+      draggable
+      :allow-drop="allowDrop"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span>{{ node.label }}</span>
@@ -59,7 +61,8 @@ export default {
         children: 'chilNodes',
         label: 'name'
       },
-      appendName: ''
+      appendName: '',
+      maxLevel: 0
     }
   },
   methods: {
@@ -70,6 +73,30 @@ export default {
       }).then(({data}) => {
         this.menus = data.data
       })
+    },
+    allowDrop(draggingNode, dropNode, type) {
+      // console.log(draggingNode, dropNode, type)
+      // 计算当前拖动的节点 (draggingNode) 的最大深度(即最大level)
+      this.countDeep(draggingNode.data)
+      // 计算当前拖动的节点往下总共有多少层
+      let draggingLevel = this.maxLevel - draggingNode.data.catLevel + 1
+      // console.log('当前节点往下有' + + draggingLevel + '层')
+      if (type === 'inner') {
+        return draggingLevel + dropNode.data.catLevel <= 3
+      } else {
+        return draggingLevel + dropNode.parent.data.catLevel <= 3
+      }
+    },
+    countDeep(node) {
+      if (node.chilNodes !== null && node.chilNodes.length !== 0) {
+        for (let child of node.chilNodes) {
+          if (child.catLevel > this.maxLevel) {
+            this.maxLevel = child.catLevel
+          }
+          // 递归找每个子节点的最大深度
+          this.countDeep(child)
+        }
+      }
     },
     append(data) {
       this.dialogVisible = true
