@@ -9,6 +9,7 @@
       :default-expanded-keys="expandNodes"
       draggable
       :allow-drop="allowDrop"
+      @node-drop="handleDrop"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span>{{ node.label }}</span>
@@ -85,7 +86,8 @@ export default {
         label: 'name'
       },
       appendName: '',
-      maxLevel: 0
+      maxLevel: 0, // 存储拖拽节点的最大的深度
+      updateNodes: [] // 存储需要更新的节点信息，一起发送到数据库
     }
   },
   computed: {
@@ -102,17 +104,78 @@ export default {
         this.menus = data.data
       })
     },
+    // 被拖拽节点对应的 Node、结束拖拽时最后进入的节点、被拖拽节点的放置位置(before、after、inner)、event
+    handleDrop(draggingNode, dropNode, dropType, ev) {
+      console.log('tree drop: ', draggingNode, dropNode, dropType, ev);
+      // 1. 当前节点最新的父节点id
+      let pCid = 0
+      let broNodes = null // 拖拽后的兄弟节点集合
+
+      if (dropType === 'inner') {
+        pCid = dropNode.data.catId
+        broNodes = dropNode.childNodes
+      } else {
+        pCid = dropNode.parent.data.catId || 0
+        broNodes = dropNode.parent.childNodes
+      }
+
+      // 2. 当前拖拽节点的最新顺序
+      for (let i = 0; i < broNodes.length; i++) {
+        // 如果当前遍历的是正在 拖拽 的节点，还需要修改它的 父级id
+        if (broNodes[i].data.catId === draggingNode.data.catId) {
+          let cLevel = draggingNode.level
+          // 如果当前节点的层级发生变化
+          if (broNodes[i].level !== draggingNode.level) {
+            cLevel = draggingNode.level
+            // 递归修改子节点的层级
+            this.updateChildNodeLevel(broNodes[i])
+          }
+          this.updateNodes.push({catId: broNodes[i].data.catId, sort: i, parentCid: pCid, catLevel: cLevel})
+        } else {
+          this.updateNodes.push({catId: broNodes[i].data.catId, sort: i})
+        }
+      }
+      console.log(this.updateNodes)
+
+      // 发送请求，修改数据库
+      this.$http({
+        url: this.$http.adornUrl('/product/category/update/batch'),
+        method: 'post',
+        data: this.$http.adornData(this.updateNodes, false)
+      }).then(({data}) => {
+        this.$message({
+          type: 'success',
+          message: '更新成功!'
+        })
+        this.dialogVisible = false
+        this.getMenus()
+        this.expandNodes = [pCid]
+
+        // 重置
+        this.maxLevel = 0
+        this.updateNodes = []
+      })
+    },
+    updateChildNodeLevel(node) {
+      if (node.childNodes.length > 0) {
+        for (let i = 0; i < node.childNodes.length; i++) {
+          let cNode = node.childNodes[i].data
+          this.updateNodes.push({catId: cNode.catId, catLevel: node.childNodes[i].level})
+          this.updateChildNodeLevel(node.childNodes[i])
+        }
+      }
+    },
     allowDrop(draggingNode, dropNode, type) {
       // console.log(draggingNode, dropNode, type)
       // 计算当前拖动的节点 (draggingNode) 的最大深度(即最大level)
       this.countDeep(draggingNode.data)
       // 计算当前拖动的节点往下总共有多少层
-      let draggingLevel = this.maxLevel - draggingNode.data.catLevel + 1
+      let draggingLevel = this.maxLevel - draggingNode.level + 1
       // console.log('当前节点往下有' + + draggingLevel + '层')
       if (type === 'inner') {
         return draggingLevel + dropNode.data.catLevel <= 3
       } else {
-        return draggingLevel + dropNode.parent.data.catLevel <= 3
+        return draggingLevel + dropNode.parent.level <= 3
       }
     },
     countDeep(node) {
@@ -143,6 +206,8 @@ export default {
       this.category.name = ''
       this.category.icon = ''
       this.category.productUnit = ''
+      this.category.sort = 0;
+      this.category.showStatus = 1
     },
     addCategory() {
       this.$http({
@@ -188,7 +253,6 @@ export default {
           type: 'success',
           message: '修改成功!'
         })
-
         this.dialogVisible = false
         this.getMenus()
         this.expandNodes = [this.category.parentCid]
