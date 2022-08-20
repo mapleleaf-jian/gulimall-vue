@@ -6,7 +6,9 @@
       inactive-text="关闭拖拽">
     </el-switch>
 
-    <el-button v-if="draggable" @click="handleBatchUpdate">批量保存</el-button>
+    <el-button v-if="draggable" type="primary" @click="handleBatchUpdate">批量保存</el-button>
+
+    <el-button type="danger" @click="handleBatchRemove">批量删除</el-button>
 
     <el-tree
       :data="menus"
@@ -18,6 +20,7 @@
       :draggable="draggable"
       :allow-drop="allowDrop"
       @node-drop="handleDrop"
+      ref="menuTree"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span>{{ node.label }}</span>
@@ -279,7 +282,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$http({
-          url: this.$http.adornUrl('/product/category/delete'),
+          url: this.$http.adornUrl('/product/category/delete/logic'),
           method: 'post',
           data: this.$http.adornData(ids, false)
         }).then(({data}) => {
@@ -288,6 +291,33 @@ export default {
             message: '删除成功!'
           })
           this.expandNodes = [node.parent.data.catId]
+          this.getMenus()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    handleBatchRemove() {
+      let checkedNodes = this.$refs.menuTree.getCheckedNodes()
+      console.log(checkedNodes)
+      let checkedIds = checkedNodes.map(node => node.catId)
+      this.$confirm(`确认批量删除?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$http({
+          url: this.$http.adornUrl('/product/category/delete/logic'),
+          method: 'post',
+          data: this.$http.adornData(checkedIds, false)
+        }).then(({data}) => {
+          this.$message({
+            type: 'success',
+            message: '菜单批量删除成功!'
+          })
           this.getMenus()
         })
       }).catch(() => {
