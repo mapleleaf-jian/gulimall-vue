@@ -1,5 +1,13 @@
 <template>
   <div>
+    <el-switch
+      v-model="draggable"
+      active-text="开启拖拽"
+      inactive-text="关闭拖拽">
+    </el-switch>
+
+    <el-button v-if="draggable" @click="handleBatchUpdate">批量保存</el-button>
+
     <el-tree
       :data="menus"
       :props="defaultProps"
@@ -7,7 +15,7 @@
       node-key="catId"
       :expand-on-click-node="false"
       :default-expanded-keys="expandNodes"
-      draggable
+      :draggable="draggable"
       :allow-drop="allowDrop"
       @node-drop="handleDrop"
     >
@@ -85,9 +93,11 @@ export default {
         children: 'chilNodes',
         label: 'name'
       },
+      draggable: false, // 是否开启拖拽
       appendName: '',
       maxLevel: 0, // 存储拖拽节点的最大的深度
-      updateNodes: [] // 存储需要更新的节点信息，一起发送到数据库
+      updateNodes: [], // 存储需要更新的节点信息，一起发送到数据库
+      pCid: [] // 当前拖动节点的父节点id
     }
   },
   computed: {
@@ -118,6 +128,7 @@ export default {
         pCid = dropNode.parent.data.catId || 0
         broNodes = dropNode.parent.childNodes
       }
+      this.pCid.push(pCid)
 
       // 2. 当前拖拽节点的最新顺序
       for (let i = 0; i < broNodes.length; i++) {
@@ -136,7 +147,8 @@ export default {
         }
       }
       console.log(this.updateNodes)
-
+    },
+    handleBatchUpdate() {
       // 发送请求，修改数据库
       this.$http({
         url: this.$http.adornUrl('/product/category/update/batch'),
@@ -149,11 +161,12 @@ export default {
         })
         this.dialogVisible = false
         this.getMenus()
-        this.expandNodes = [pCid]
+        this.expandNodes = this.pCid
 
         // 重置
         this.maxLevel = 0
         this.updateNodes = []
+        this.pCid = []
       })
     },
     updateChildNodeLevel(node) {
@@ -168,9 +181,9 @@ export default {
     allowDrop(draggingNode, dropNode, type) {
       // console.log(draggingNode, dropNode, type)
       // 计算当前拖动的节点 (draggingNode) 的最大深度(即最大level)
-      this.countDeep(draggingNode.data)
+      this.countDeep(draggingNode)
       // 计算当前拖动的节点往下总共有多少层
-      let draggingLevel = this.maxLevel - draggingNode.level + 1
+      let draggingLevel = Math.abs(this.maxLevel - draggingNode.level) + 1
       // console.log('当前节点往下有' + + draggingLevel + '层')
       if (type === 'inner') {
         return draggingLevel + dropNode.data.catLevel <= 3
@@ -179,10 +192,10 @@ export default {
       }
     },
     countDeep(node) {
-      if (node.chilNodes !== null && node.chilNodes.length !== 0) {
-        for (let child of node.chilNodes) {
-          if (child.catLevel > this.maxLevel) {
-            this.maxLevel = child.catLevel
+      if (node.childNodes !== null && node.childNodes.length !== 0) {
+        for (let child of node.childNodes) {
+          if (child.level > this.maxLevel) {
+            this.maxLevel = child.level
           }
           // 递归找每个子节点的最大深度
           this.countDeep(child)
