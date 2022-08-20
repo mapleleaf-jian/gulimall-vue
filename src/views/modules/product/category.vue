@@ -286,12 +286,14 @@ export default {
           method: 'post',
           data: this.$http.adornData(ids, false)
         }).then(({data}) => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
-          this.expandNodes = [node.parent.data.catId]
-          this.getMenus()
+          if (data && data.code === 0) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.expandNodes = [node.parent.data.catId]
+            this.getMenus()
+          }
         })
       }).catch(() => {
         this.$message({
@@ -314,11 +316,13 @@ export default {
           method: 'post',
           data: this.$http.adornData(checkedIds, false)
         }).then(({data}) => {
-          this.$message({
-            type: 'success',
-            message: '菜单批量删除成功!'
-          })
-          this.getMenus()
+          if (data && data.code === 0) {
+            this.$message({
+              type: 'success',
+              message: '菜单批量删除成功!'
+            })
+            this.getMenus()
+          }
         })
       }).catch(() => {
         this.$message({
