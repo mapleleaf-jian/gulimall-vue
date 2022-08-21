@@ -72,6 +72,7 @@ import {
   Aside,
   Main,
   Footer,
+  Image,
   Loading,
   MessageBox,
   Message,
@@ -138,6 +139,7 @@ Vue.use(ColorPicker)
 Vue.use(Transfer)
 Vue.use(Container)
 Vue.use(Header)
+Vue.use(Image)
 Vue.use(Aside)
 Vue.use(Main)
 Vue.use(Footer)
