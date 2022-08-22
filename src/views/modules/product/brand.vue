@@ -157,7 +157,7 @@
         console.log(row)
         let updateData = {brandId: row.brandId, showStatus: row.showStatus}
         this.$http({
-          url: this.$http.adornUrl('/product/brand/update'),
+          url: this.$http.adornUrl('/product/brand/update/status'),
           method: 'post',
           data: this.$http.adornData(updateData, false)
         }).then(({data}) => {
@@ -165,7 +165,7 @@
             this.$message({
               message: '状态更新成功！',
               type: 'success',
-              duration: 1500,
+              duration: 1000,
               onClose: () => {
                 this.getDataList()
               }
