@@ -141,6 +141,7 @@ export default {
       })
     },
     getAll() {
+      this.dataForm.key = ''
       this.catId = 0
       this.getDataList()
     },
