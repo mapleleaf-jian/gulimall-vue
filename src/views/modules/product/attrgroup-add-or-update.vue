@@ -2,8 +2,9 @@
   <el-dialog
     :title="!dataForm.attrGroupId ? '新增' : '修改'"
     :close-on-click-modal="false"
-    :visible.sync="visible">
-    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
+    :visible.sync="visible"
+    @closed="dialogClosed">
+    <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="100px">
     <el-form-item label="组名" prop="attrGroupName">
       <el-input v-model="dataForm.attrGroupName" placeholder="组名"></el-input>
     </el-form-item>
@@ -17,7 +18,14 @@
       <el-input v-model="dataForm.icon" placeholder="组图标"></el-input>
     </el-form-item>
     <el-form-item label="所属分类id" prop="catelogId">
-      <el-input v-model="dataForm.catelogId" placeholder="所属分类id"></el-input>
+<!--      <el-input v-model="dataForm.catelogId" placeholder="所属分类id"></el-input>-->
+      <el-cascader
+        placeholder="试试搜索：手机"
+        v-model="dataForm.catelogPath"
+        :options="categories"
+        :props="props"
+        filterable
+        clearable></el-cascader>
     </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -38,7 +46,8 @@
           sort: '',
           descript: '',
           icon: '',
-          catelogId: ''
+          catelogPath: [],
+          catelogId: 0
         },
         dataRule: {
           attrGroupName: [
@@ -56,8 +65,17 @@
           catelogId: [
             { required: true, message: '所属分类id不能为空', trigger: 'blur' }
           ]
-        }
+        },
+        props: {
+          value: 'catId',
+          label: 'name',
+          children: 'chilNodes'
+        },
+        categories: []
       }
+    },
+    created() {
+      this.getCategories()
     },
     methods: {
       init (id) {
@@ -77,13 +95,23 @@
                 this.dataForm.descript = data.attrGroup.descript
                 this.dataForm.icon = data.attrGroup.icon
                 this.dataForm.catelogId = data.attrGroup.catelogId
+                this.dataForm.catelogPath = data.attrGroup.catelogPath
               }
             })
           }
         })
       },
+      getCategories() {
+        this.$http({
+          url: this.$http.adornUrl('/product/category/list/tree'),
+          method: 'get'
+        }).then(({data}) => {
+          this.categories = data.data
+        })
+      },
       // 表单提交
       dataFormSubmit () {
+        // console.log(this.dataForm.catelogIds[this.dataForm.catelogIds.length - 1])
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({
@@ -95,7 +123,7 @@
                 'sort': this.dataForm.sort,
                 'descript': this.dataForm.descript,
                 'icon': this.dataForm.icon,
-                'catelogId': this.dataForm.catelogId
+                'catelogId': this.dataForm.catelogPath[this.dataForm.catelogPath.length - 1] // 取最后一个元素
               })
             }).then(({data}) => {
               if (data && data.code === 0) {
@@ -114,6 +142,9 @@
             })
           }
         })
+      },
+      dialogClosed() {
+        this.dataForm.catelogPath = []
       }
     }
   }
