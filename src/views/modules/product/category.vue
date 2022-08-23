@@ -56,13 +56,13 @@
       :close-on-click-modal="false">
       <el-form :model="category">
         <el-form-item label="菜单名称">
-          <el-input v-model="category.name"></el-input>
+          <el-input v-model="category.name" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="图标">
-          <el-input v-model="category.icon"></el-input>
+          <el-input v-model="category.icon" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="计量单位">
-          <el-input v-model="category.productUnit"></el-input>
+          <el-input v-model="category.productUnit" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">

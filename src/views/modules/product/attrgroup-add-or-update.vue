@@ -19,13 +19,15 @@
     </el-form-item>
     <el-form-item label="所属分类id" prop="catelogId">
 <!--      <el-input v-model="dataForm.catelogId" placeholder="所属分类id"></el-input>-->
-      <el-cascader
-        placeholder="试试搜索：手机"
-        v-model="dataForm.catelogPath"
-        :options="categories"
-        :props="props"
-        filterable
-        clearable></el-cascader>
+<!--      <el-cascader-->
+<!--        placeholder="试试搜索：手机"-->
+<!--        v-model="catelogPath"-->
+<!--        :options="categories"-->
+<!--        :props="props"-->
+<!--        :catelogPath.sync="catelogPath"-->
+<!--        filterable-->
+<!--        clearable></el-cascader>-->
+      <category-cascader :catelogPath.sync="catelogPath"></category-cascader>
     </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -36,7 +38,9 @@
 </template>
 
 <script>
+  import CategoryCascader from '../common/category-cascader'
   export default {
+    components: {CategoryCascader},
     data () {
       return {
         visible: false,
@@ -46,9 +50,9 @@
           sort: '',
           descript: '',
           icon: '',
-          catelogPath: [],
           catelogId: 0
         },
+        catelogPath: [],
         dataRule: {
           attrGroupName: [
             { required: true, message: '组名不能为空', trigger: 'blur' }
@@ -95,7 +99,7 @@
                 this.dataForm.descript = data.attrGroup.descript
                 this.dataForm.icon = data.attrGroup.icon
                 this.dataForm.catelogId = data.attrGroup.catelogId
-                this.dataForm.catelogPath = data.attrGroup.catelogPath
+                this.catelogPath = data.attrGroup.catelogPath
               }
             })
           }
@@ -123,7 +127,7 @@
                 'sort': this.dataForm.sort,
                 'descript': this.dataForm.descript,
                 'icon': this.dataForm.icon,
-                'catelogId': this.dataForm.catelogPath[this.dataForm.catelogPath.length - 1] // 取最后一个元素
+                'catelogId': this.catelogPath[this.catelogPath.length - 1] // 取最后一个元素
               })
             }).then(({data}) => {
               if (data && data.code === 0) {
@@ -144,7 +148,7 @@
         })
       },
       dialogClosed() {
-        this.dataForm.catelogPath = []
+        this.catelogPath = []
       }
     }
   }
