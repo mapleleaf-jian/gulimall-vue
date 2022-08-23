@@ -12,6 +12,7 @@
           </el-form-item>
           <el-form-item>
             <el-button @click="getDataList()">查询</el-button>
+            <el-button v-if="isAuth('product:attrgroup:save')" type="success" @click="getAll()">查询全部</el-button>
             <el-button v-if="isAuth('product:attrgroup:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
             <el-button v-if="isAuth('product:attrgroup:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
           </el-form-item>
@@ -138,6 +139,10 @@ export default {
         }
         this.dataListLoading = false
       })
+    },
+    getAll() {
+      this.catId = 0
+      this.getDataList()
     },
     treeNodeClick(data, node, component) {
       console.log(data, node, component)
