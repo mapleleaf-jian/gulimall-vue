@@ -134,7 +134,7 @@ export default {
       catId: 0,
       type: 1,
       dataForm: {
-        key: ""
+        key: ''
       },
       dataList: [],
       pageIndex: 1,
@@ -157,6 +157,7 @@ export default {
       }
     },
     getAllDataList(){
+      this.dataForm.key = ''
       this.catId = 0;
       this.getDataList();
     },
