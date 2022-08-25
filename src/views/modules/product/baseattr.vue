@@ -36,7 +36,7 @@
           <el-table-column prop="attrId" header-align="center" align="center" label="id"></el-table-column>
           <el-table-column prop="attrName" header-align="center" align="center" label="属性名"></el-table-column>
           <el-table-column
-            v-if="attrtype === 1"
+            v-if="attrType === 1"
             prop="searchType"
             header-align="center"
             align="center"
@@ -72,13 +72,13 @@
           </el-table-column>
           <el-table-column prop="catelogName" header-align="center" align="center" label="所属分类"></el-table-column>
           <el-table-column
-            v-if="attrtype === 1"
+            v-if="attrType === 1"
             prop="groupName"
             header-align="center"
             align="center"
             label="所属分组"
           ></el-table-column>
-          <el-table-column v-if="attrtype === 1" prop="showDesc" header-align="center" align="center" label="快速展示">
+          <el-table-column v-if="attrType === 1" prop="showDesc" header-align="center" align="center" label="快速展示">
             <template slot-scope="scope">
               <i class="el-icon-success" v-if="scope.row.showDesc === 1"></i>
               <i class="el-icon-error" v-else></i>
@@ -108,7 +108,7 @@
         ></el-pagination>
         <!-- 弹窗, 新增 / 修改 -->
         <add-or-update
-          :type="attrtype"
+          :type="attrType"
           v-if="addOrUpdateVisible"
           ref="addOrUpdate"
           @refreshDataList="getDataList"
@@ -124,7 +124,7 @@ import AddOrUpdate from "./attr-add-or-update";
 export default {
   components: { Category, AddOrUpdate },
   props: {
-    attrtype: {
+    attrType: {
       type: Number,
       default: 1
     }
@@ -163,7 +163,7 @@ export default {
     // 获取数据列表
     getDataList() {
       this.dataListLoading = true;
-      let type = this.attrtype === 0 ? "sale" : "base";
+      let type = this.attrType === 0 ? "sale" : "base";
       this.$http({
         url: this.$http.adornUrl(`/product/attr/${type}/list/${this.catId}`),
         method: "get",
