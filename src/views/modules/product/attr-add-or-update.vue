@@ -63,7 +63,7 @@
           :inactive-value="0"
         ></el-switch>
       </el-form-item>
-      <el-form-item label="快速展示" prop="showDesc" v-if="type == 1">
+      <el-form-item label="快速展示" prop="showDesc">
         <el-switch
           v-model="dataForm.showDesc"
           active-color="#13ce66"
@@ -262,7 +262,7 @@ export default {
               this.$message({
                 message: "操作成功",
                 type: "success",
-                duration: 1500,
+                duration: 700,
                 onClose: () => {
                   this.visible = false;
                   this.$emit("refreshDataList");
