@@ -36,20 +36,20 @@
           <el-table-column prop="attrId" header-align="center" align="center" label="id"></el-table-column>
           <el-table-column prop="attrName" header-align="center" align="center" label="属性名"></el-table-column>
           <el-table-column
-            v-if="attrtype == 1"
+            v-if="attrtype === 1"
             prop="searchType"
             header-align="center"
             align="center"
             label="可检索"
           >
             <template slot-scope="scope">
-              <i class="el-icon-success" v-if="scope.row.searchType==1"></i>
+              <i class="el-icon-success" v-if="scope.row.searchType===1"></i>
               <i class="el-icon-error" v-else></i>
             </template>
           </el-table-column>
           <el-table-column prop="valueType" header-align="center" align="center" label="值类型">
             <template slot-scope="scope">
-              <el-tag type="success" v-if="scope.row.valueType==0">单选</el-tag>
+              <el-tag type="success" v-if="scope.row.valueType===0">单选</el-tag>
               <el-tag v-else>多选</el-tag>
             </template>
           </el-table-column>
@@ -66,21 +66,21 @@
           </el-table-column>
           <el-table-column prop="enable" header-align="center" align="center" label="启用">
             <template slot-scope="scope">
-              <i class="el-icon-success" v-if="scope.row.enable==1"></i>
+              <i class="el-icon-success" v-if="scope.row.enable===1"></i>
               <i class="el-icon-error" v-else></i>
             </template>
           </el-table-column>
           <el-table-column prop="catelogName" header-align="center" align="center" label="所属分类"></el-table-column>
           <el-table-column
-            v-if="attrtype == 1"
+            v-if="attrtype === 1"
             prop="groupName"
             header-align="center"
             align="center"
             label="所属分组"
           ></el-table-column>
-          <el-table-column v-if="attrtype == 1" prop="showDesc" header-align="center" align="center" label="快速展示">
+          <el-table-column v-if="attrtype === 1" prop="showDesc" header-align="center" align="center" label="快速展示">
             <template slot-scope="scope">
-              <i class="el-icon-success" v-if="scope.row.showDesc==1"></i>
+              <i class="el-icon-success" v-if="scope.row.showDesc === 1"></i>
               <i class="el-icon-error" v-else></i>
             </template>
           </el-table-column>
@@ -154,7 +154,7 @@ export default {
   methods: {
     //感知树节点被点击
     treenodeclick(data, node, component) {
-      if (node.level == 3) {
+      if (node.level === 3) {
         this.catId = data.catId;
         this.getDataList(); //重新查询
       }
@@ -166,7 +166,7 @@ export default {
     // 获取数据列表
     getDataList() {
       this.dataListLoading = true;
-      let type = this.attrtype == 0 ? "sale" : "base";
+      let type = this.attrtype === 0 ? "sale" : "base";
       this.$http({
         url: this.$http.adornUrl(`/product/attr/${type}/list/${this.catId}`),
         method: "get",
@@ -247,5 +247,5 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style scoped>
 </style>
