@@ -773,17 +773,17 @@ export default {
     }
   },
   mounted() {
-    this.catPathSub = PubSub.subscribe("catPath", (msg, val) => {
+    this.catPathSub = this.PubSub.subscribe("catPath", (msg, val) => {
       this.spu.catalogId = val[val.length - 1];
     });
-    this.brandIdSub = PubSub.subscribe("brandId", (msg, val) => {
+    this.brandIdSub = this.PubSub.subscribe("brandId", (msg, val) => {
       this.spu.brandId = val;
     });
     this.getMemberLevels();
   },
   beforeDestroy() {
-    PubSub.unsubscribe(this.catPathSub);
-    PubSub.unsubscribe(this.brandIdSub);
+    this.PubSub.unsubscribe(this.catPathSub);
+    this.PubSub.unsubscribe(this.brandIdSub);
   }
 };
 </script>

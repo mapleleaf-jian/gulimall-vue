@@ -1,7 +1,7 @@
 <template>
   <el-row :gutter="20">
     <el-col :span="6">
-      <category @tree-node-click="treenodeclick"></category>
+      <category @tree-node-click="treeNodeClick"></category>
     </el-col>
     <el-col :span="18">
       <div class="mod-config">
@@ -150,7 +150,7 @@ export default {
   },
   methods: {
     //感知树节点被点击
-    treenodeclick(data, node, component) {
+    treeNodeClick(data, node, component) {
       if (node.level === 3) {
         this.catId = data.catId;
         this.getDataList(); //重新查询
