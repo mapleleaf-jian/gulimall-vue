@@ -180,11 +180,11 @@ export default {
       });
     },
     handleBatchCommand(cmd) {
-      if (cmd == "delete") {
+      if (cmd === "delete") {
         this.deleteHandle();
       }
-      if (cmd == "merge") {
-        if (this.dataListSelections.length != 0) {
+      if (cmd === "merge") {
+        if (this.dataListSelections.length !== 0) {
           this.getUnreceivedPurchase();
           this.mergedialogVisible = true;
         } else {

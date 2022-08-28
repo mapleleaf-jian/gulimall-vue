@@ -59,7 +59,7 @@
           <el-button
             type="text"
             size="small"
-            v-if="scope.row.status==0||scope.row.status==1"
+            v-if="scope.row.status===0||scope.row.status===1"
             @click="opendrawer(scope.row)"
           >分配</el-button>
           <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
@@ -124,7 +124,7 @@ export default {
     this.getDataList();
   },
   created() {
-    
+
   },
   methods: {
     opendrawer(row){
@@ -160,7 +160,7 @@ export default {
             type: "success",
             duration: 1500
           });
-          
+
           this.userId = "";
           this.getDataList();
         } else {
